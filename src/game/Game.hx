@@ -1,5 +1,9 @@
+import sample.SamplePlayer;
+
 class Game extends AppChildProcess {
 	public static var ME : Game;
+
+	/** Entities**/
 
 	/** Game controller (pad or keyboard) **/
 	public var ca : ControllerAccess<GameAction>;
@@ -65,7 +69,9 @@ class Game extends AppChildProcess {
 		garbageCollectEntities();
 
 		level = new Level(l);
-		// <---- Here: instanciate your level entities
+		
+		
+		new SamplePlayer();
 
 		camera.centerOnTarget();
 		hud.onLevelStart();

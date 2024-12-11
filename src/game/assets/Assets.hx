@@ -9,7 +9,7 @@ class Assets {
 	// Fonts
 	public static var fontPixel : h2d.Font;
 	public static var fontPixelMono : h2d.Font;
-
+	static var palette : Array<Col> = [];
 	/** Main atlas **/
 	public static var tiles : SpriteLib;
 
@@ -27,6 +27,13 @@ class Assets {
 		fontPixel = new hxd.res.BitmapFont( hxd.Res.fonts.pixel_unicode_regular_12_xml.entry ).toFont();
 		fontPixelMono = new hxd.res.BitmapFont( hxd.Res.fonts.pixica_mono_regular_16_xml.entry ).toFont();
 
+		var pal = hxd.Res.atlas.sweetie_16_1x.getPixels(ARGB);
+		palette = [];
+		for(i in 0...pal.width) {
+			var c : Col = pal.getPixel(i, 0);
+			c = c.withoutAlpha();
+			palette.push(c);
+		}
 		// build sprite atlas directly from Aseprite file
 		tiles = dn.heaps.assets.Aseprite.convertToSLib(Const.FPS, hxd.Res.atlas.tiles.toAseprite());
 
@@ -73,6 +80,17 @@ class Assets {
 		#end
 	}
 
+	public static inline function getCol(idx:Int) : Col {
+		return palette[ M.iclamp(idx,0,palette.length-1) ];
+	}
+	public static inline function black() return getCol(0);
+	public static inline function dark() return getCol(15);
+	public static inline function white() return getCol(12);
+	public static inline function yellow() return getCol(4);
+	public static inline function green() return getCol(5);
+	public static inline function blue() return getCol(10);
+	public static inline function red() return getCol(2);
+	public static inline function walls() return getCol(17);
 
 	/**
 		Pass `tmod` value from the game to atlases, to allow them to play animations at the same speed as the Game.

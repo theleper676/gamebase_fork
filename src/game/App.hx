@@ -2,9 +2,12 @@
 	"App" class takes care of all the top-level stuff in the whole application. Any other Process, including Game instance, should be a child of App.
 **/
 
+import page.TitleScreen;
+
+
 class App extends dn.Process {
 	public static var ME : App;
-
+	var crt : dn.heaps.filter.Crt;
 	/** 2D scene **/
 	public var scene(default,null) : h2d.Scene;
 
@@ -39,8 +42,8 @@ class App extends dn.Process {
 		#if debug
 		Console.ME.enableStats();
 		#end
-
-		startGame();
+		startTitleScreen();
+		//startGame();
 	}
 
 
@@ -97,6 +100,22 @@ class App extends dn.Process {
 	#end
 
 
+	/** Start title screen**/
+	public function startTitleScreen () {
+		trace("initing title screen...");
+		if(Game.exists()){
+			Game.ME.destroy();
+			dn.Process.updateAll(1);
+			_createTitleScreen();
+			//hxd.Timer.skip();
+		} else {
+			// Fresh start
+			delayer.nextFrame( ()->{
+				_createTitleScreen();
+				hxd.Timer.skip();
+			});
+		}
+	}
 	/** Start game process **/
 	public function startGame() {
 		if( Game.exists() ) {
@@ -115,10 +134,17 @@ class App extends dn.Process {
 		}
 	}
 
-	final function _createGameInstance() {
-		// new Game(); // <---- Uncomment this to start an empty Game instance
-		new sample.SampleGame(); // <---- Uncomment this to start the Sample Game instance
+		
+	final function _createTitleScreen() {
+		
+		trace('entring creation');
+		new TitleScreen();
 	}
+	final function _createGameInstance() {
+		new Game(); // <---- Uncomment this to start an empty Game instance
+		
+	}
+	
 
 
 	public function anyInputHasFocus() {
@@ -191,6 +217,11 @@ class App extends dn.Process {
       		hxd.Res.initEmbed();
         #end
 
+		crt = new dn.heaps.filter.Crt(2, White, 0.3);
+		scene.filter = crt;
+		crt.autoUpdateSize = ()-> Const.SCALE;
+		crt.vignetting = 1;
+
 		// Sound manager (force manager init on startup to avoid a freeze on first sound playback)
 		hxd.snd.Manager.get();
 		hxd.Timer.skip(); // needed to ignore heavy Sound manager init frame
@@ -238,6 +269,7 @@ class App extends dn.Process {
 		controller.bindPad(MoveRight, DPAD_RIGHT);
 		controller.bindPad(MoveUp, DPAD_UP);
 		controller.bindPad(MoveDown, DPAD_DOWN);
+		controller.bindPad(Shoot, B);
 
 		controller.bindPad(MenuUp, [DPAD_UP, LSTICK_UP]);
 		controller.bindPad(MenuDown, [DPAD_DOWN, LSTICK_DOWN]);
@@ -252,6 +284,7 @@ class App extends dn.Process {
 		controller.bindKeyboard(MoveUp, [K.UP, K.Z, K.W]);
 		controller.bindKeyboard(MoveDown, [K.DOWN, K.S]);
 		controller.bindKeyboard(Jump, [K.SPACE,K.UP]);
+		controller.bindKeyboard(Shoot, [K.CTRL]);
 		controller.bindKeyboard(Restart, K.R);
 		controller.bindKeyboard(ScreenshotMode, K.F9);
 		controller.bindKeyboard(Pause, K.P);
@@ -336,3 +369,5 @@ class App extends dn.Process {
 
     }
 }
+
+

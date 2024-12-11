@@ -10,6 +10,7 @@ package sample;
 
 class SamplePlayer extends Entity {
 	var ca : ControllerAccess<GameAction>;
+	var ctrlQueue : dn.heaps.input.ControllerQueue<GameAction>;
 	var walkSpeed = 0.;
 
 	// This is TRUE if the player is not falling
@@ -35,6 +36,10 @@ class SamplePlayer extends Entity {
 		// Init controller
 		ca = App.ME.controller.createAccess();
 		ca.lockCondition = Game.isGameControllerLocked;
+
+		//Set control Queue
+		ctrlQueue = new ControllerQueue(ca);
+		ctrlQueue.watch(Shoot);
 
 		// Placeholder display
 		var b = new h2d.Bitmap( h2d.Tile.fromColor(Green, iwid, ihei), spr );
@@ -82,18 +87,34 @@ class SamplePlayer extends Entity {
 	}
 
 
+
+	function debugInputPress(action:GameAction) {
+		if(ca.isPressed(action)) {
+			trace("pressed" + action);
+		}
+	}
+
+
+	function shoot (){
+		game.camera.shakeS(0.1,0.8);
+	}
 	/**
 		Control inputs are checked at the beginning of the frame.
 		VERY IMPORTANT NOTE: because game physics only occur during the `fixedUpdate` (at a constant 30 FPS), no physics increment should ever happen here! What this means is that you can SET a physics value (eg. see the Jump below), but not make any calculation that happens over multiple frames (eg. increment X speed when walking).
 	**/
 	override function preUpdate() {
 		super.preUpdate();
-
+		ctrlQueue.earlyFrameUpdate(game.stime);
+		debugInputPress(Jump);
 		walkSpeed = 0;
 		if( onGround )
 			cd.setS("recentlyOnGround",0.1); // allows "just-in-time" jumps
 
-
+		
+		// Shoot
+		if(ca.isPressed(Shoot)) {
+			shoot();
+		}
 		// Jump
 		if( cd.has("recentlyOnGround") && ca.isPressed(Jump) ) {
 			vBase.dy = -0.85;
