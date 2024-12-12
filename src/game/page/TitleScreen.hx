@@ -1,10 +1,12 @@
 package page;
 
+import hxd.System;
 import dn.heaps.HParticle;
 
 class TitleScreen extends AppChildProcess {
     var cm : dn.Cinematic;
     var box : h2d.Bitmap;
+    var bgCol: h2d.Bitmap;
     var ca : ControllerAccess<GameAction>;
     var pool : dn.heaps.HParticle.ParticlePool;
     var fxAdd : h2d.SpriteBatch;
@@ -18,8 +20,12 @@ class TitleScreen extends AppChildProcess {
         ca = App.ME.controller.createAccess();
         cm = new dn.Cinematic(Const.FPS);
         pool = new dn.heaps.HParticle.ParticlePool(Assets.tiles.tile, 2048, Const.FPS);
+ 
+        bgCol = new h2d.Bitmap(h2d.Tile.fromColor(Col.inlineHex("#210C29")));
+        root.add(bgCol, Const.DP_MAIN);
 
-		box = new h2d.Bitmap( hxd.Res.atlas.title.box2.toTile() );
+
+		box = new h2d.Bitmap( hxd.Res.atlas.title.box3.toTile() );
 		box.tile.setCenterRatio();
 		root.add(box, Const.DP_FX_FRONT);
 		box.setScale(2);
@@ -34,6 +40,7 @@ class TitleScreen extends AppChildProcess {
 		fxAdd.blendMode = Add;
 		fxAdd.hasRotationScale = true;
         
+        run();
 	}
 
 
@@ -55,40 +62,55 @@ class TitleScreen extends AppChildProcess {
         var h = stageHei / 1.;
         var xr = rnd(0,1);
       
-      /*   for(i in 0...1) {
-            var p = allocAdd(D.tiles.fxSmoke, w*xr, h+30-rnd(0,40,true)-rnd(0,xr*50) );
-            p.setFadeS(rnd(0.04, 0.10), 1, rnd(1,2) );
-            p.colorize( Assets.blue() );
-            p.rotation = R.fullCircle();
-            p.setScale(rnd(2,3,true));
-            p.gy = -R.around(0.01);
-            p.gx = rnd(0, 0.01);
-            p.frict = R.aroundBO(0.9, 5);
-            p.lifeS = rnd(1,2);
-        } */
-
-        for(i in 0...4) {
+        for(i in 0...5) {
             var p = allocAdd(D.tiles.pixel, rnd(0,w*0.8), rnd(0,h*0.7) );
             p.setFadeS(rnd(0.2, 0.5), 1, rnd(1,2) );
-            p.colorAnimS( Col.inlineHex("#ff6900"), Assets.dark(), rnd(1,3) );
+            p.colorAnimS( Col.inlineHex("#FFB272"), Col.inlineHex("#FFED95"), rnd(1,3) );
             p.alphaFlicker = rnd(0.2,0.5);
             p.setScale(irnd(1,2));
             p.dr = rnd(0,0.1,true);
             p.gx = rnd(0, 0.03);
             p.gy = rnd(-0.02, 0.08);
             p.dx = rnd(0,1);
-            // p.dy = rnd(0,1,true);
             p.frict = R.aroundBO(0.98, 5);
             p.lifeS = rnd(1,2);
         }
     }
 
+    override function onResize() {
+        super.onResize();
+        var upscale = dn.heaps.Scaler.bestFit_i(box.tile.height, box.tile.height);
+        box.setScale(upscale);
+        fxAdd.setScale(upscale);
+        fxNormal.setScale(upscale);
+        box.setPosition( Std.int( stageWid *0.5 ), Std.int( stageHei *0.5 ) );
+
+    }
+
     override function update() {
         super.update();
-
-        if(ca.isKeyboardPressed(K.ESCAPE)){
+        cm.update(tmod);
+        if(ca.isPressed(MenuOk)){
             App.ME.startGame();
         }
+    }
+
+    function run(){
+        var scale = 1.;
+        box.alpha = 0;
+
+        cm.create({
+            700;
+            tw.createS(box.alpha, 1, 2);
+           /*  tw.createS(box.scaleX, scale, 0.15);
+			tw.createS(box.scaleY, scale, 0.15);
+            tw.createS(box.colorAdd.r, 0, 0.5);
+			tw.createS(box.colorAdd.g, 0, 0.2);
+			tw.createS(box.colorAdd.b, 0, 0.4); */
+			200;
+        });
+        
+        
     }
 
 }

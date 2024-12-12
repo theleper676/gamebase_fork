@@ -7,7 +7,7 @@ import page.TitleScreen;
 
 class App extends dn.Process {
 	public static var ME : App;
-	var crt : dn.heaps.filter.Crt;
+	//var crt : dn.heaps.filter.Crt;
 	/** 2D scene **/
 	public var scene(default,null) : h2d.Scene;
 
@@ -217,10 +217,6 @@ class App extends dn.Process {
       		hxd.Res.initEmbed();
         #end
 
-		crt = new dn.heaps.filter.Crt(2, White, 0.3);
-		scene.filter = crt;
-		crt.autoUpdateSize = ()-> Const.SCALE;
-		crt.vignetting = 1;
 
 		// Sound manager (force manager init on startup to avoid a freeze on first sound playback)
 		hxd.snd.Manager.get();
@@ -275,7 +271,7 @@ class App extends dn.Process {
 		controller.bindPad(MenuDown, [DPAD_DOWN, LSTICK_DOWN]);
 		controller.bindPad(MenuLeft, [DPAD_LEFT, LSTICK_LEFT]);
 		controller.bindPad(MenuRight, [DPAD_RIGHT, LSTICK_RIGHT]);
-		controller.bindPad(MenuOk, [A, X]);
+		controller.bindPad(MenuOk, [START]);
 		controller.bindPad(MenuCancel, B);
 
 		// Keyboard bindings

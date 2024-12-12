@@ -97,6 +97,10 @@ class SamplePlayer extends Entity {
 
 	function shoot (){
 		game.camera.shakeS(0.1,0.8);
+		game.camera.bump(-dir*3, 0);
+		ca.rumble(0.2, 0.06);
+		var bullet = new Bullet(this);
+		bullet.speed = rnd(0.95, 1.05);
 	}
 	/**
 		Control inputs are checked at the beginning of the frame.
@@ -105,7 +109,6 @@ class SamplePlayer extends Entity {
 	override function preUpdate() {
 		super.preUpdate();
 		ctrlQueue.earlyFrameUpdate(game.stime);
-		debugInputPress(Jump);
 		walkSpeed = 0;
 		if( onGround )
 			cd.setS("recentlyOnGround",0.1); // allows "just-in-time" jumps
@@ -126,8 +129,14 @@ class SamplePlayer extends Entity {
 
 		// Walk
 		if( !isChargingAction() && ca.getAnalogDist2(MoveLeft,MoveRight)>0 ) {
+		
 			// As mentioned above, we don't touch physics values (eg. `dx`) here. We just store some "requested walk speed", which will be applied to actual physics in fixedUpdate.
 			walkSpeed = ca.getAnalogValue2(MoveLeft,MoveRight); // -1 to 1
+			if(walkSpeed < 0) {
+				dir = -1;
+			} else {
+				dir = 1;
+			}
 		}
 	}
 
